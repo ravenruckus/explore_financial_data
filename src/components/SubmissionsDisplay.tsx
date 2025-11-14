@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { SECSubmissions, RecentFiling } from '@/types/company';
 
 interface SubmissionsDisplayProps {
@@ -430,6 +431,9 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
                   <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                     Description
                   </th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
@@ -477,6 +481,22 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
                             );
                           }
                           return description || 'N/A';
+                        })()}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm">
+                        {(() => {
+                          const accessionNumber = recentFilings.accessionNumber?.[originalIndex];
+                          if (accessionNumber) {
+                            return (
+                              <Link
+                                href={`/company-facts/${cik}?accessionNumber=${encodeURIComponent(accessionNumber)}`}
+                                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors dark:bg-blue-500 dark:hover:bg-blue-600"
+                              >
+                                View Facts
+                              </Link>
+                            );
+                          }
+                          return <span className="text-gray-400 dark:text-gray-500">N/A</span>;
                         })()}
                       </td>
                     </tr>
