@@ -13,6 +13,7 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
   const [error, setError] = useState<string | null>(null);
   const [dateFieldType, setDateFieldType] = useState<'filingDate' | 'reportDate'>('filingDate');
   const [selectedDate, setSelectedDate] = useState<string>('');
+  const [formTypeFilter, setFormTypeFilter] = useState<string>('');
 
   // Helper function to normalize dates for comparison
   const normalizeDate = (dateStr: string | null | undefined): string | null => {
@@ -53,9 +54,10 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
     }
   }, [cik]);
 
-  // Reset filter when CIK changes
+  // Reset filters when CIK changes
   useEffect(() => {
     setSelectedDate('');
+    setFormTypeFilter('');
   }, [cik]);
 
   if (loading) {
@@ -89,11 +91,38 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
   const recentFilings = submissions.filings?.recent;
   const totalFilingCount = recentFilings?.form?.length || 0;
 
+  // Get unique form types for suggestions
+  const uniqueFormTypes = recentFilings?.form 
+    ? Array.from(new Set(recentFilings.form.filter(Boolean))).sort()
+    : [];
+
   // Get indices around the selected date and track which ones match exactly
   const getFilteredIndices = (): { indices: number[]; exactMatchIndices: Set<number> } => {
-    if (!recentFilings || !selectedDate) {
+    if (!recentFilings) {
       return {
         indices: Array.from({ length: totalFilingCount }, (_, i) => i),
+        exactMatchIndices: new Set<number>()
+      };
+    }
+
+    // First, filter by form type if a filter is set
+    let formFilteredIndices: number[] = [];
+    if (formTypeFilter.trim()) {
+      const lowerFormFilter = formTypeFilter.toLowerCase().trim();
+      for (let i = 0; i < totalFilingCount; i++) {
+        const formType = recentFilings.form?.[i];
+        if (formType && formType.toLowerCase().includes(lowerFormFilter)) {
+          formFilteredIndices.push(i);
+        }
+      }
+    } else {
+      formFilteredIndices = Array.from({ length: totalFilingCount }, (_, i) => i);
+    }
+
+    // If no date filter is set, return form-filtered indices
+    if (!selectedDate) {
+      return {
+        indices: formFilteredIndices,
         exactMatchIndices: new Set<number>()
       };
     }
@@ -104,12 +133,12 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
 
     if (!dateArray) {
       return {
-        indices: Array.from({ length: totalFilingCount }, (_, i) => i),
+        indices: formFilteredIndices,
         exactMatchIndices: new Set<number>()
       };
     }
 
-    // Find exact matches and their indices
+    // Find exact matches and their indices (only from form-filtered indices)
     const exactMatchIndices = new Set<number>();
     const dateIndices: { index: number; date: string }[] = [];
     const normalizedSelectedDate = normalizeDate(selectedDate);
@@ -124,7 +153,8 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
       });
     }
     
-    for (let i = 0; i < dateArray.length; i++) {
+    // Only check dates for indices that passed the form filter
+    for (const i of formFilteredIndices) {
       const dateValue = dateArray[i];
       if (dateValue) {
         const normalizedDateValue = normalizeDate(dateValue);
@@ -135,17 +165,20 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
       }
     }
 
-    // If we have exact matches, show filings around them
+    // If we have exact matches, show filings around them (but only from form-filtered indices)
     if (exactMatchIndices.size > 0) {
       const contextSize = 5; // Show 5 filings before and after
       const allIndices = new Set<number>();
       
-      // Add exact matches and context around each
+      // Add exact matches and context around each (but only include indices that pass form filter)
       exactMatchIndices.forEach(matchIndex => {
         const start = Math.max(0, matchIndex - contextSize);
         const end = Math.min(totalFilingCount - 1, matchIndex + contextSize);
         for (let i = start; i <= end; i++) {
-          allIndices.add(i);
+          // Only include if it passes the form filter
+          if (formFilteredIndices.includes(i)) {
+            allIndices.add(i);
+          }
         }
       });
       
@@ -175,7 +208,10 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
       const end = Math.min(totalFilingCount - 1, closestIndex + contextSize);
       const indices: number[] = [];
       for (let i = start; i <= end; i++) {
-        indices.push(i);
+        // Only include if it passes the form filter
+        if (formFilteredIndices.includes(i)) {
+          indices.push(i);
+        }
       }
       return {
         indices,
@@ -183,16 +219,18 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
       };
     }
 
-    // Fallback: return all indices
+    // Fallback: return form-filtered indices
     return {
-      indices: Array.from({ length: totalFilingCount }, (_, i) => i),
+      indices: formFilteredIndices,
       exactMatchIndices: new Set<number>()
     };
   };
 
   const { indices: filteredIndices, exactMatchIndices } = getFilteredIndices();
   const filingCount = filteredIndices.length;
-  const isFilterActive = selectedDate !== '';
+  const isDateFilterActive = selectedDate !== '';
+  const isFormFilterActive = formTypeFilter.trim() !== '';
+  const isFilterActive = isDateFilterActive || isFormFilterActive;
 
   return (
     <div className="w-full max-w-4xl mt-8 space-y-6">
@@ -277,11 +315,42 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
       {recentFilings && totalFilingCount > 0 && (
         <div className="bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
-            Recent Filings {isFilterActive ? `(showing ${filingCount} around selected date of ${totalFilingCount})` : `(${totalFilingCount})`}
+            Recent Filings {isFilterActive ? `(showing ${filingCount} of ${totalFilingCount})` : `(${totalFilingCount})`}
           </h3>
           
           {/* Filter Section */}
-          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600">
+          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 space-y-4">
+            {/* Form Type Filter */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                Filter by Form Type
+              </label>
+              <div className="relative">
+                <input
+                  type="text"
+                  value={formTypeFilter}
+                  onChange={(e) => setFormTypeFilter(e.target.value)}
+                  placeholder="Search by form type (e.g., 10-K, 10-Q, 8-K)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                />
+                {formTypeFilter && (
+                  <button
+                    onClick={() => setFormTypeFilter('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+              {uniqueFormTypes.length > 0 && !formTypeFilter && (
+                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                  Available forms: {uniqueFormTypes.slice(0, 10).join(', ')}
+                  {uniqueFormTypes.length > 10 && ` and ${uniqueFormTypes.length - 10} more`}
+                </p>
+              )}
+            </div>
+
+            {/* Date Filter */}
             <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
               <div className="flex-1">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -323,10 +392,13 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
               </div>
               {isFilterActive && (
                 <button
-                  onClick={() => setSelectedDate('')}
+                  onClick={() => {
+                    setSelectedDate('');
+                    setFormTypeFilter('');
+                  }}
                   className="px-4 py-2 text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-md transition-colors dark:bg-gray-500 dark:hover:bg-gray-600"
                 >
-                  Clear Filter
+                  Clear All Filters
                 </button>
               )}
             </div>
@@ -384,19 +456,29 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
               </tbody>
             </table>
           </div>
-          {isFilterActive && exactMatchIndices.size === 0 && (
+          {isDateFilterActive && exactMatchIndices.size === 0 && (
             <p className="mt-4 text-sm text-amber-600 dark:text-amber-400">
               No filings found on the selected date. Showing filings around the closest date.
             </p>
           )}
-          {isFilterActive && exactMatchIndices.size > 0 && (
+          {isDateFilterActive && exactMatchIndices.size > 0 && (
             <p className="mt-4 text-sm text-green-600 dark:text-green-400">
               Found {exactMatchIndices.size} filing(s) on the selected date (highlighted in yellow).
             </p>
           )}
+          {isFormFilterActive && filingCount === 0 && (
+            <p className="mt-4 text-sm text-amber-600 dark:text-amber-400">
+              No filings found matching "{formTypeFilter}".
+            </p>
+          )}
+          {isFormFilterActive && filingCount > 0 && (
+            <p className="mt-4 text-sm text-blue-600 dark:text-blue-400">
+              Showing {filingCount} filing(s) matching "{formTypeFilter}".
+            </p>
+          )}
           {filingCount > 20 && (
             <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
-              Showing 20 of {filingCount} {isFilterActive ? 'around selected date' : ''} filings
+              Showing 20 of {filingCount} {isFilterActive ? 'filtered' : ''} filings
             </p>
           )}
         </div>
