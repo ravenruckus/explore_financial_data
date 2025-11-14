@@ -30,6 +30,16 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
     return null;
   };
 
+  // Helper function to build SEC document URL
+  const buildDocumentUrl = (accessionNumber: string | null | undefined, primaryDocument: string | null | undefined): string | null => {
+    if (!accessionNumber || !primaryDocument) return null;
+    // Remove dashes from accession number for URL
+    const formattedAccessionNumber = accessionNumber.replace(/-/g, '');
+    // Format CIK with zero-padding to 10 digits
+    const formattedCik = String(cik).padStart(10, '0');
+    return `https://www.sec.gov/Archives/edgar/data/${formattedCik}/${formattedAccessionNumber}/${primaryDocument}`;
+  };
+
   useEffect(() => {
     const fetchSubmissions = async () => {
       setLoading(true);
@@ -448,7 +458,26 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
                           : 'N/A'}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                        {recentFilings.primaryDocDescription?.[originalIndex] || 'N/A'}
+                        {(() => {
+                          const description = recentFilings.primaryDocDescription?.[originalIndex];
+                          const accessionNumber = recentFilings.accessionNumber?.[originalIndex];
+                          const primaryDocument = recentFilings.primaryDocument?.[originalIndex];
+                          const documentUrl = buildDocumentUrl(accessionNumber, primaryDocument);
+                          
+                          if (documentUrl && description) {
+                            return (
+                              <a
+                                href={documentUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800 hover:underline dark:text-blue-400 dark:hover:text-blue-300"
+                              >
+                                {description}
+                              </a>
+                            );
+                          }
+                          return description || 'N/A';
+                        })()}
                       </td>
                     </tr>
                   );
