@@ -152,19 +152,19 @@ export default function CompanyFactsDisplay({
 
   if (!companyFacts) {
     return (
-      <div className="w-full max-w-4xl mt-8 p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
-        <p className="text-gray-600 dark:text-gray-400">No company facts data available.</p>
+      <div className="w-full mt-8 p-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <p className="text-base text-gray-600 dark:text-gray-400">No company facts data available.</p>
       </div>
     );
   }
 
   if (flattenedFacts.length === 0) {
     return (
-      <div className="w-full max-w-4xl mt-8 p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
-        <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+      <div className="w-full mt-8 p-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
           No Facts Found
         </h2>
-        <p className="text-gray-600 dark:text-gray-400">
+        <p className="text-base text-gray-600 dark:text-gray-400">
           No company facts found for accession number: <strong>{accessionNumber}</strong>
         </p>
       </div>
@@ -173,29 +173,29 @@ export default function CompanyFactsDisplay({
   console.log('flattenedFacts', flattenedFacts)
 
   return (
-    <div className="w-full max-w-6xl mt-8 space-y-6">
+    <div className="w-full mt-8 space-y-6">
       {/* Company Info */}
-      <div className="bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+      <div className="bg-white rounded-lg shadow-md p-8 dark:bg-gray-800">
+        <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
           {companyFacts.name || 'N/A'}
         </h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-base text-gray-600 dark:text-gray-400">
           Accession Number: <strong>{accessionNumber}</strong>
         </p>
-        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+        <p className="text-base text-gray-600 dark:text-gray-400 mt-2">
           Total facts for this filing: <strong>{flattenedFacts.length}</strong>
         </p>
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="bg-white rounded-lg shadow-md p-8 dark:bg-gray-800">
+        <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
           Filters
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Search */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
               Search Facts
             </label>
             <input
@@ -203,19 +203,19 @@ export default function CompanyFactsDisplay({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search by concept, label, or description..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
             />
           </div>
 
           {/* Taxonomy Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
               Taxonomy
             </label>
             <select
               value={selectedTaxonomy}
               onChange={(e) => setSelectedTaxonomy(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
             >
               <option value="">All Taxonomies</option>
               {uniqueTaxonomies.map((taxonomy) => (
@@ -228,13 +228,13 @@ export default function CompanyFactsDisplay({
 
           {/* Unit Filter */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
               Unit
             </label>
             <select
               value={selectedUnit}
               onChange={(e) => setSelectedUnit(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
             >
               <option value="">All Units</option>
               {uniqueUnits.map((unit) => (
@@ -254,26 +254,26 @@ export default function CompanyFactsDisplay({
               setSelectedTaxonomy('');
               setSelectedUnit('');
             }}
-            className="mt-4 px-4 py-2 text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-md transition-colors dark:bg-gray-500 dark:hover:bg-gray-600"
+            className="mt-6 px-6 py-3 text-base font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-md transition-colors dark:bg-gray-500 dark:hover:bg-gray-600"
           >
             Clear All Filters
           </button>
         )}
 
         {/* Results Count */}
-        <p className="mt-4 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-6 text-base text-gray-600 dark:text-gray-400">
           Showing {filteredFacts.length} of {flattenedFacts.length} facts
         </p>
       </div>
 
       {/* Facts Table */}
-      <div className="bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+      <div className="bg-white rounded-lg shadow-md p-8 dark:bg-gray-800">
+        <h3 className="text-2xl font-semibold text-gray-900 dark:text-white mb-6">
           Company Facts
         </h3>
 
         {paginatedFacts.length === 0 ? (
-          <p className="text-gray-600 dark:text-gray-400">
+          <p className="text-base text-gray-600 dark:text-gray-400">
             No facts match the current filters.
           </p>
         ) : (
@@ -282,22 +282,22 @@ export default function CompanyFactsDisplay({
               <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead className="bg-gray-50 dark:bg-gray-700">
                   <tr>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                    <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                       Taxonomy
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                    <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                       Concept
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                    <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                       Label
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                    <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                       Unit
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                    <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                       Value
                     </th>
-                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                    <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                       Period
                     </th>
                   </tr>
@@ -311,30 +311,30 @@ export default function CompanyFactsDisplay({
                         key={`${fact.taxonomy}-${fact.concept}-${fact.unit}-${idx}`}
                         className="hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                        <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900 dark:text-white">
                           {fact.taxonomy}
                         </td>
-                        <td className="px-4 py-3 text-sm font-mono text-gray-900 dark:text-white">
+                        <td className="px-6 py-4 text-base font-mono text-gray-900 dark:text-white">
                           {fact.concept}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-4 text-base text-gray-600 dark:text-white">
                           <div>
                             <div className="font-medium">{fact.label}</div>
                             {fact.description && (
-                              <div className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+                              <div className="text-base text-gray-500 dark:text-gray-400 mt-2">
                                 {fact.description}
                               </div>
                             )}
                           </div>
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                        <td className="px-6 py-4 whitespace-nowrap text-base text-gray-600 dark:text-gray-400">
                           {fact.unit}
                         </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                        <td className="px-6 py-4 whitespace-nowrap text-base font-medium text-gray-900 dark:text-white">
                           {formatValue(firstValue.val)}
                         </td>
-                        <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                          <div className="text-xs">
+                        <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-400">
+                          <div className="text-sm">
                             {firstValue.start && (
                               <div>Start: {formatDate(firstValue.start)}</div>
                             )}
@@ -354,22 +354,22 @@ export default function CompanyFactsDisplay({
 
             {/* Pagination */}
             {totalPages > 1 && (
-              <div className="mt-4 flex items-center justify-between">
-                <div className="text-sm text-gray-600 dark:text-gray-400">
+              <div className="mt-6 flex items-center justify-between">
+                <div className="text-base text-gray-600 dark:text-gray-400">
                   Page {currentPage} of {totalPages}
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-3">
                   <button
                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                     disabled={currentPage === 1}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                    className="px-6 py-3 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                   >
                     Previous
                   </button>
                   <button
                     onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
                     disabled={currentPage === totalPages}
-                    className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
+                    className="px-6 py-3 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors"
                   >
                     Next
                   </button>
