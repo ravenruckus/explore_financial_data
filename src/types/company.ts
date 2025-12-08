@@ -79,3 +79,37 @@ export interface SECSubmissions {
   };
 }
 
+// Company Facts Types
+export interface FactValue {
+  val: number | string | null;
+  accn: string;
+  end?: string;
+  filed?: string;
+  fp?: string;
+  form?: string;
+  fy?: string;
+  start?: string;
+  frame?: string;
+}
+
+export interface Fact {
+  label: string;
+  description?: string;
+  units: {
+    [unit: string]: FactValue[];
+  };
+}
+
+export interface Facts {
+  [taxonomy: string]: {
+    [concept: string]: Fact;
+  };
+}
+
+export interface CompanyFacts {
+  cik: string;
+  entityType: string;
+  name: string;
+  facts: Facts;
+}
+

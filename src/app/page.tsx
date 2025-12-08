@@ -1,20 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import CompanySearch from '@/components/CompanySearch';
-import SubmissionsDisplay from '@/components/SubmissionsDisplay';
 import { Company } from '@/types/company';
 
 export default function Home() {
-  const [selectedCompany, setSelectedCompany] = useState<Company | null>(null);
+  const router = useRouter();
 
   const handleCompanySelect = (company: Company) => {
-    setSelectedCompany(company);
+    router.push(`/submissions/${company.cik_str}`);
   };
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
+      <main className="mx-auto px-8 py-8 max-w-[95vw]">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             SEC Company Search
@@ -27,10 +26,6 @@ export default function Home() {
         <div className="mb-8">
           <CompanySearch onCompanySelect={handleCompanySelect} />
         </div>
-
-        {selectedCompany && (
-          <SubmissionsDisplay cik={selectedCompany.cik_str} />
-        )}
       </main>
     </div>
   );
