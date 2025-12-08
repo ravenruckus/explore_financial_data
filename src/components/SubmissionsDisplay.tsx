@@ -208,12 +208,32 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
     }
 
     // If no exact matches, find the closest date and show context around it
-    const selectedDateObj = new Date(selectedDate);
+    if (!normalizedSelectedDate) {
+      return {
+        indices: formFilteredIndices,
+        exactMatchIndices: new Set<number>()
+      };
+    }
+    
+    const selectedDateObj = new Date(normalizedSelectedDate);
+    // Validate the date is valid
+    if (isNaN(selectedDateObj.getTime())) {
+      return {
+        indices: formFilteredIndices,
+        exactMatchIndices: new Set<number>()
+      };
+    }
+    
     let closestIndex = -1;
     let minDiff = Infinity;
 
     for (let i = 0; i < dateIndices.length; i++) {
-      const dateObj = new Date(dateIndices[i].date);
+      const normalizedDateValue = normalizeDate(dateIndices[i].date);
+      if (!normalizedDateValue) continue;
+      
+      const dateObj = new Date(normalizedDateValue);
+      if (isNaN(dateObj.getTime())) continue;
+      
       const diff = Math.abs(selectedDateObj.getTime() - dateObj.getTime());
       if (diff < minDiff) {
         minDiff = diff;

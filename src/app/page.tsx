@@ -46,7 +46,7 @@ export default function Home() {
         }
         return null;
       })
-      .filter((item): item is typeof item & { cik: number; ticker: string } => item !== null);
+      .filter((item): item is { name: string; date: string; cik: number; ticker: string } => item !== null);
   }, [companies]);
 
   return (
