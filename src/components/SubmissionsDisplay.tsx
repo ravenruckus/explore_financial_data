@@ -73,10 +73,10 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
 
   if (loading) {
     return (
-      <div className="w-full max-w-4xl mt-8 p-6 bg-white rounded-lg shadow-md dark:bg-gray-800">
-        <div className="flex items-center justify-center py-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-          <span className="ml-4 text-gray-600 dark:text-gray-400">
+      <div className="w-full mt-8 p-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-500"></div>
+          <span className="ml-6 text-lg text-gray-600 dark:text-gray-400">
             Loading submissions...
           </span>
         </div>
@@ -86,11 +86,11 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
 
   if (error) {
     return (
-      <div className="w-full max-w-4xl mt-8 p-6 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
-        <h3 className="text-lg font-semibold text-red-800 dark:text-red-400 mb-2">
+      <div className="w-full mt-8 p-8 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-800">
+        <h3 className="text-xl font-semibold text-red-800 dark:text-red-400 mb-3">
           Error
         </h3>
-        <p className="text-red-600 dark:text-red-300">{error}</p>
+        <p className="text-base text-red-600 dark:text-red-300">{error}</p>
       </div>
     );
   }
@@ -244,78 +244,78 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
   const isFilterActive = isDateFilterActive || isFormFilterActive;
 
   return (
-    <div className="w-full max-w-4xl mt-8 space-y-6">
+    <div className="w-full mt-8 space-y-6">
       {/* Company Information */}
-      <div className="bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
-        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+      <div className="bg-white rounded-lg shadow-md p-8 dark:bg-gray-800">
+        <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-6">
           {submissions.name || 'N/A'}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
-            <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+            <span className="text-base font-semibold text-gray-600 dark:text-gray-400">
               CIK:
             </span>
-            <span className="ml-2 text-gray-900 dark:text-white">
+            <span className="ml-2 text-base text-gray-900 dark:text-white">
               {submissions.cik}
             </span>
           </div>
           {submissions.tickers && submissions.tickers.length > 0 && (
             <div>
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              <span className="text-base font-semibold text-gray-600 dark:text-gray-400">
                 Ticker(s):
               </span>
-              <span className="ml-2 text-gray-900 dark:text-white">
+              <span className="ml-2 text-base text-gray-900 dark:text-white">
                 {submissions.tickers.join(', ')}
               </span>
             </div>
           )}
           {submissions.sic && (
             <div>
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              <span className="text-base font-semibold text-gray-600 dark:text-gray-400">
                 SIC:
               </span>
-              <span className="ml-2 text-gray-900 dark:text-white">
+              <span className="ml-2 text-base text-gray-900 dark:text-white">
                 {submissions.sic} - {submissions.sicDescription || 'N/A'}
               </span>
             </div>
           )}
           {submissions.exchanges && submissions.exchanges.length > 0 && (
             <div>
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              <span className="text-base font-semibold text-gray-600 dark:text-gray-400">
                 Exchange(s):
               </span>
-              <span className="ml-2 text-gray-900 dark:text-white">
+              <span className="ml-2 text-base text-gray-900 dark:text-white">
                 {submissions.exchanges.join(', ')}
               </span>
             </div>
           )}
           {submissions.fiscalYearEnd && (
             <div>
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              <span className="text-base font-semibold text-gray-600 dark:text-gray-400">
                 Fiscal Year End:
               </span>
-              <span className="ml-2 text-gray-900 dark:text-white">
+              <span className="ml-2 text-base text-gray-900 dark:text-white">
                 {submissions.fiscalYearEnd}
               </span>
             </div>
           )}
           {submissions.stateOfIncorporationDescription && (
             <div>
-              <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              <span className="text-base font-semibold text-gray-600 dark:text-gray-400">
                 State of Incorporation:
               </span>
-              <span className="ml-2 text-gray-900 dark:text-white">
+              <span className="ml-2 text-base text-gray-900 dark:text-white">
                 {submissions.stateOfIncorporationDescription}
               </span>
             </div>
           )}
         </div>
         {submissions.description && (
-          <div className="mt-4">
-            <span className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+          <div className="mt-6">
+            <span className="text-base font-semibold text-gray-600 dark:text-gray-400">
               Description:
             </span>
-            <p className="mt-1 text-gray-900 dark:text-white">
+            <p className="mt-2 text-base text-gray-900 dark:text-white">
               {submissions.description}
             </p>
           </div>
@@ -324,16 +324,16 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
 
       {/* Recent Filings */}
       {recentFilings && totalFilingCount > 0 && (
-        <div className="bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className="bg-white rounded-lg shadow-md p-8 dark:bg-gray-800">
+          <h3 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">
             Recent Filings {isFilterActive ? `(showing ${filingCount} of ${totalFilingCount})` : `(${totalFilingCount})`}
           </h3>
           
           {/* Filter Section */}
-          <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 space-y-4">
+          <div className="mb-8 p-6 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 space-y-6">
             {/* Form Type Filter */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
                 Filter by Form Type
               </label>
               <div className="relative">
@@ -342,7 +342,7 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
                   value={formTypeFilter}
                   onChange={(e) => setFormTypeFilter(e.target.value)}
                   placeholder="Search by form type (e.g., 10-K, 10-Q, 8-K)"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                 />
                 {formTypeFilter && (
                   <button
@@ -354,7 +354,7 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
                 )}
               </div>
               {uniqueFormTypes.length > 0 && !formTypeFilter && (
-                <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                <p className="mt-3 text-sm text-gray-500 dark:text-gray-400">
                   Available forms: {uniqueFormTypes.slice(0, 10).join(', ')}
                   {uniqueFormTypes.length > 10 && ` and ${uniqueFormTypes.length - 10} more`}
                 </p>
@@ -362,21 +362,21 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
             </div>
 
             {/* Date Filter */}
-            <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-end">
+            <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end">
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
                   Filter by Date Field
                 </label>
-                <div className="flex gap-4">
+                <div className="flex gap-6">
                   <label className="flex items-center">
                     <input
                       type="radio"
                       value="filingDate"
                       checked={dateFieldType === 'filingDate'}
                       onChange={(e) => setDateFieldType(e.target.value as 'filingDate' | 'reportDate')}
-                      className="mr-2 text-blue-600 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
+                      className="mr-2 w-4 h-4 text-blue-600 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">Filing Date</span>
+                    <span className="text-base text-gray-700 dark:text-gray-300">Filing Date</span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -384,21 +384,21 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
                       value="reportDate"
                       checked={dateFieldType === 'reportDate'}
                       onChange={(e) => setDateFieldType(e.target.value as 'filingDate' | 'reportDate')}
-                      className="mr-2 text-blue-600 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
+                      className="mr-2 w-4 h-4 text-blue-600 focus:ring-blue-500 dark:bg-gray-600 dark:border-gray-500"
                     />
-                    <span className="text-sm text-gray-700 dark:text-gray-300">Report Date</span>
+                    <span className="text-base text-gray-700 dark:text-gray-300">Report Date</span>
                   </label>
                 </div>
               </div>
               <div className="flex-1">
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
                   Select Date
                 </label>
                 <input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-600 dark:border-gray-500 dark:text-white"
                 />
               </div>
               {isFilterActive && (
@@ -407,7 +407,7 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
                     setSelectedDate('');
                     setFormTypeFilter('');
                   }}
-                  className="px-4 py-2 text-sm font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-md transition-colors dark:bg-gray-500 dark:hover:bg-gray-600"
+                  className="px-6 py-3 text-base font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-md transition-colors dark:bg-gray-500 dark:hover:bg-gray-600"
                 >
                   Clear All Filters
                 </button>
@@ -419,19 +419,19 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
             <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
               <thead className="bg-gray-50 dark:bg-gray-700">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                     Form
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                     Filing Date
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                     Report Date
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                     Description
                   </th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                  <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                     Actions
                   </th>
                 </tr>
@@ -448,20 +448,20 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
                           : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                     >
-                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
+                      <td className="px-6 py-4 whitespace-nowrap text-base font-medium text-gray-900 dark:text-white">
                         {recentFilings.form?.[originalIndex] || 'N/A'}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-6 py-4 whitespace-nowrap text-base text-gray-600 dark:text-gray-400">
                         {recentFilings.filingDate?.[originalIndex]
                           ? recentFilings.filingDate[originalIndex]
                           : 'N/A'}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-6 py-4 whitespace-nowrap text-base text-gray-600 dark:text-gray-400">
                         {recentFilings.reportDate?.[originalIndex]
                           ? recentFilings.reportDate[originalIndex]
                           : 'N/A'}
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                      <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-400">
                         {(() => {
                           const description = recentFilings.primaryDocDescription?.[originalIndex];
                           const accessionNumber = recentFilings.accessionNumber?.[originalIndex];
@@ -483,20 +483,21 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
                           return description || 'N/A';
                         })()}
                       </td>
-                      <td className="px-4 py-3 whitespace-nowrap text-sm">
+                      <td className="px-6 py-4 whitespace-nowrap text-base">
                         {(() => {
                           const accessionNumber = recentFilings.accessionNumber?.[originalIndex];
+                          console.log('accessionNumber', accessionNumber)
                           if (accessionNumber) {
                             return (
                               <Link
                                 href={`/company-facts/${cik}?accessionNumber=${encodeURIComponent(accessionNumber)}`}
-                                className="inline-flex items-center px-3 py-1.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors dark:bg-blue-500 dark:hover:bg-blue-600"
+                                className="inline-flex items-center px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors dark:bg-blue-500 dark:hover:bg-blue-600"
                               >
                                 View Facts
                               </Link>
                             );
                           }
-                          return <span className="text-gray-400 dark:text-gray-500">N/A</span>;
+                          return <span className="text-base text-gray-400 dark:text-gray-500">N/A</span>;
                         })()}
                       </td>
                     </tr>
@@ -506,27 +507,27 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
             </table>
           </div>
           {isDateFilterActive && exactMatchIndices.size === 0 && (
-            <p className="mt-4 text-sm text-amber-600 dark:text-amber-400">
+            <p className="mt-6 text-base text-amber-600 dark:text-amber-400">
               No filings found on the selected date. Showing filings around the closest date.
             </p>
           )}
           {isDateFilterActive && exactMatchIndices.size > 0 && (
-            <p className="mt-4 text-sm text-green-600 dark:text-green-400">
+            <p className="mt-6 text-base text-green-600 dark:text-green-400">
               Found {exactMatchIndices.size} filing(s) on the selected date (highlighted in yellow).
             </p>
           )}
           {isFormFilterActive && filingCount === 0 && (
-            <p className="mt-4 text-sm text-amber-600 dark:text-amber-400">
+            <p className="mt-6 text-base text-amber-600 dark:text-amber-400">
               No filings found matching "{formTypeFilter}".
             </p>
           )}
           {isFormFilterActive && filingCount > 0 && (
-            <p className="mt-4 text-sm text-blue-600 dark:text-blue-400">
+            <p className="mt-6 text-base text-blue-600 dark:text-blue-400">
               Showing {filingCount} filing(s) matching "{formTypeFilter}".
             </p>
           )}
           {filingCount > 20 && (
-            <p className="mt-4 text-sm text-gray-500 dark:text-gray-400">
+            <p className="mt-6 text-base text-gray-500 dark:text-gray-400">
               Showing 20 of {filingCount} {isFilterActive ? 'filtered' : ''} filings
             </p>
           )}

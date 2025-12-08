@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
-      <main className="container mx-auto px-4 py-8 max-w-6xl">
+      <main className="mx-auto px-8 py-8 max-w-[95vw]">
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
             SEC Company Search
