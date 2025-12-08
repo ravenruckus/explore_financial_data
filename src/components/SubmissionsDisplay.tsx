@@ -6,14 +6,15 @@ import { SECSubmissions, RecentFiling } from '@/types/company';
 
 interface SubmissionsDisplayProps {
   cik: number;
+  initialDate?: string;
 }
 
-export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
+export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisplayProps) {
   const [submissions, setSubmissions] = useState<SECSubmissions | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dateFieldType, setDateFieldType] = useState<'filingDate' | 'reportDate'>('filingDate');
-  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>(initialDate || '');
   const [formTypeFilter, setFormTypeFilter] = useState<string>('');
 
   // Helper function to normalize dates for comparison
@@ -67,9 +68,16 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
 
   // Reset filters when CIK changes
   useEffect(() => {
-    setSelectedDate('');
+    setSelectedDate(initialDate || '');
     setFormTypeFilter('');
-  }, [cik]);
+  }, [cik, initialDate]);
+
+  // Set initial date when component mounts or initialDate changes
+  useEffect(() => {
+    if (initialDate) {
+      setSelectedDate(initialDate);
+    }
+  }, [initialDate]);
 
   if (loading) {
     return (
