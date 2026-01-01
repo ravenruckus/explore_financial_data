@@ -16,6 +16,9 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
   const [dateFieldType, setDateFieldType] = useState<'filingDate' | 'reportDate'>('filingDate');
   const [selectedDate, setSelectedDate] = useState<string>(initialDate || '');
   const [formTypeFilter, setFormTypeFilter] = useState<string>('');
+  const [contextSize, setContextSize] = useState<number>(5);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 15;
 
   // Helper function to normalize dates for comparison
   const normalizeDate = (dateStr: string | null | undefined): string | null => {
@@ -70,7 +73,14 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
   useEffect(() => {
     setSelectedDate(initialDate || '');
     setFormTypeFilter('');
+    setContextSize(5);
+    setCurrentPage(1);
   }, [cik, initialDate]);
+
+  // Reset page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [selectedDate, formTypeFilter, contextSize, dateFieldType]);
 
   if (loading) {
     return (
@@ -179,7 +189,6 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
 
     // If we have exact matches, show filings around them (but only from form-filtered indices)
     if (exactMatchIndices.size > 0) {
-      const contextSize = 5; // Show 5 filings before and after
       const allIndices = new Set<number>();
       
       // Add exact matches and context around each (but only include indices that pass form filter)
@@ -235,7 +244,6 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
     }
 
     if (closestIndex >= 0) {
-      const contextSize = 5;
       const start = Math.max(0, closestIndex - contextSize);
       const end = Math.min(totalFilingCount - 1, closestIndex + contextSize);
       const indices: number[] = [];
@@ -263,6 +271,12 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
   const isDateFilterActive = selectedDate !== '';
   const isFormFilterActive = formTypeFilter.trim() !== '';
   const isFilterActive = isDateFilterActive || isFormFilterActive;
+
+  // Pagination
+  const totalPages = Math.ceil(filingCount / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedIndices = filteredIndices.slice(startIndex, endIndex);
 
   return (
     <div className="w-full mt-8 space-y-6">
@@ -383,6 +397,7 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
             </div>
 
             {/* Date Filter */}
+            <div className="space-y-4">
             <div className="flex flex-col sm:flex-row gap-6 items-start sm:items-end">
               <div className="flex-1">
                 <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
@@ -427,12 +442,40 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
                   onClick={() => {
                     setSelectedDate('');
                     setFormTypeFilter('');
+                    setContextSize(5);
                   }}
                   className="px-6 py-3 text-base font-medium text-white bg-gray-600 hover:bg-gray-700 rounded-md transition-colors dark:bg-gray-500 dark:hover:bg-gray-600"
                 >
                   Clear All Filters
                 </button>
               )}
+            </div>
+
+            {/* Context Size Slider - only show when date is selected */}
+            {isDateFilterActive && (
+              <div>
+                <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
+                  Filings on each side: {contextSize}
+                </label>
+                <div className="flex items-center gap-4">
+                  <input
+                    type="range"
+                    min="0"
+                    max="50"
+                    step="1"
+                    value={contextSize}
+                    onChange={(e) => setContextSize(Number(e.target.value))}
+                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-600"
+                    style={{
+                      background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(contextSize / 50) * 100}%, #e5e7eb ${(contextSize / 50) * 100}%, #e5e7eb 100%)`
+                    }}
+                  />
+                  <span className="text-sm text-gray-600 dark:text-gray-400 min-w-[60px] text-right">
+                    {contextSize} filing{contextSize !== 1 ? 's' : ''}
+                  </span>
+                </div>
+              </div>
+            )}
             </div>
           </div>
 
@@ -458,7 +501,7 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200 dark:bg-gray-800 dark:divide-gray-700">
-                {filteredIndices.slice(0, 20).map((originalIndex) => {
+                {paginatedIndices.map((originalIndex) => {
                   const isExactMatch = exactMatchIndices.has(originalIndex);
                   return (
                     <tr
@@ -527,6 +570,32 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
               </tbody>
             </table>
           </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-between">
+              <div className="text-base text-gray-600 dark:text-gray-400">
+                Page {currentPage} of {totalPages}
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setCurrentPage(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-6 py-3 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-600"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => setCurrentPage(currentPage + 1)}
+                  disabled={currentPage === totalPages}
+                  className="px-6 py-3 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-600"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+
           {isDateFilterActive && exactMatchIndices.size === 0 && (
             <p className="mt-6 text-base text-amber-600 dark:text-amber-400">
               No filings found on the selected date. Showing filings around the closest date.
@@ -547,9 +616,9 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
               Showing {filingCount} filing(s) matching "{formTypeFilter}".
             </p>
           )}
-          {filingCount > 20 && (
+          {filingCount > itemsPerPage && (
             <p className="mt-6 text-base text-gray-500 dark:text-gray-400">
-              Showing 20 of {filingCount} {isFilterActive ? 'filtered' : ''} filings
+              Showing {startIndex + 1}-{Math.min(endIndex, filingCount)} of {filingCount} {isFilterActive ? 'filtered' : ''} filing{filingCount !== 1 ? 's' : ''}
             </p>
           )}
         </div>
