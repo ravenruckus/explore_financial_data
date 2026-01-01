@@ -1,53 +1,31 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import Link from 'next/link';
 import CompanySearch from '@/components/CompanySearch';
 import { Company, CompanyTickers } from '@/types/company';
 import companyTickersData from '@/data/company_tickers.json';
 import { featuredCompanies } from '@/content/featuredCompanies';
+import { useFeaturedCompaniesWithCIKs } from '@/hooks/useFeaturedCompaniesWithCIKs';
 
 const companyTickers = companyTickersData as CompanyTickers;
 
 export default function Home() {
   const router = useRouter();
-  const [companies, setCompanies] = useState<Company[]>([]);
-
-  // Load companies from JSON file
-  useEffect(() => {
-    const companiesArray = Object.values(companyTickers) as Company[];
-    setCompanies(companiesArray);
-  }, []);
+  
+  // Compute companies array once
+  const companies = useMemo(() =>
+    Object.values(companyTickers) as Company[],
+    []
+  );
 
   const handleCompanySelect = (company: Company) => {
     router.push(`/submissions/${company.cik_str}`);
   };
 
-  // Find CIKs for featured companies
-  const featuredCompaniesWithCIKs = useMemo(() => {
-    return featuredCompanies
-      .map((featured) => {
-        // Remove quotes from company name for matching
-        const normalizedName = featured.name.replace(/^"|"$/g, '');
-        
-        // Find matching company (case-insensitive)
-        const matchedCompany = companies.find((company) => {
-          const companyTitle = company.title.trim();
-          return companyTitle.toLowerCase() === normalizedName.toLowerCase();
-        });
-
-        if (matchedCompany) {
-          return {
-            ...featured,
-            cik: matchedCompany.cik_str,
-            ticker: matchedCompany.ticker,
-          };
-        }
-        return null;
-      })
-      .filter((item): item is { name: string; date: string; cik: number; ticker: string } => item !== null);
-  }, [companies]);
+  // Get featured companies with their CIKs
+  const featuredCompaniesWithCIKs = useFeaturedCompaniesWithCIKs(companies, featuredCompanies);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black">
@@ -68,7 +46,7 @@ export default function Home() {
         {featuredCompaniesWithCIKs.length > 0 && (
           <div className="mt-12">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Featured Companies
+              Companies and the dates they filed 8-Ks for a security event
             </h2>
             <div className="bg-white rounded-lg shadow-md p-6 dark:bg-gray-800">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -76,6 +54,7 @@ export default function Home() {
                   <Link
                     key={company.cik}
                     href={`/submissions/${company.cik}?date=${company.date}`}
+                    aria-label={`View ${company.name} SEC filing from ${company.date}`}
                     className="block p-4 border border-gray-200 rounded-lg hover:bg-gray-50 hover:border-blue-500 transition-colors dark:border-gray-700 dark:hover:bg-gray-700 dark:hover:border-blue-500"
                   >
                     <div className="font-semibold text-gray-900 dark:text-white mb-1">
