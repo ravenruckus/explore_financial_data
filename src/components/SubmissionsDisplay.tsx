@@ -544,6 +544,9 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
                     Description
                   </th>
                   <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
+                    Preview PDF
+                  </th>
+                  <th className="px-6 py-4 text-left text-base font-medium text-gray-500 uppercase tracking-wider dark:text-gray-300">
                     Actions
                   </th>
                 </tr>
@@ -598,12 +601,50 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
                       <td className="px-6 py-4 whitespace-nowrap text-base">
                         {(() => {
                           const accessionNumber = recentFilings.accessionNumber?.[originalIndex];
-                          console.log('accessionNumber', accessionNumber)
+                          const primaryDocument = recentFilings.primaryDocument?.[originalIndex];
+                          const documentUrl = buildDocumentUrl(accessionNumber, primaryDocument);
+                          const description = recentFilings.primaryDocDescription?.[originalIndex];
+                          const filingDate = recentFilings.filingDate?.[originalIndex];
+                          
+                          if (documentUrl) {
+                            const params = new URLSearchParams({
+                              url: documentUrl,
+                            });
+                            
+                            if (submissions.name) {
+                              params.append('company', submissions.name);
+                            }
+                            if (filingDate) {
+                              params.append('date', filingDate);
+                            }
+                            if (description) {
+                              params.append('description', description);
+                            }
+                            
+                            const previewPdfUrl = `/api/preview-pdf?${params.toString()}`;
+                            return (
+                              <a
+                                href={previewPdfUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center px-3 py-1 text-md font-medium text-white bg-teal-600 hover:bg-teal-700 rounded transition-colors dark:bg-teal-500 dark:hover:bg-teal-600"
+                                title="Preview as PDF"
+                              >
+                                Preview PDF
+                              </a>
+                            );
+                          }
+                          return <span className="text-base text-gray-400 dark:text-gray-500">N/A</span>;
+                        })()}
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-base">
+                        {(() => {
+                          const accessionNumber = recentFilings.accessionNumber?.[originalIndex];
                           if (accessionNumber) {
                             return (
                               <Link
                                 href={`/company-facts/${cik}?accessionNumber=${encodeURIComponent(accessionNumber)}`}
-                                className="inline-flex items-center px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors dark:bg-blue-500 dark:hover:bg-blue-600"
+                                className="inline-flex items-center px-3 py-1.5 text-md font-medium text-white bg-blue-600 hover:bg-blue-700 rounded transition-colors dark:bg-blue-500 dark:hover:bg-blue-600"
                               >
                                 View Facts
                               </Link>
@@ -658,12 +699,12 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
           )}
           {isFormFilterActive && filingCount === 0 && (
             <p className="mt-6 text-base text-amber-600 dark:text-amber-400">
-              No filings found matching "{formTypeFilter}".
+              No filings found matching &quot;{formTypeFilter}&quot;.
             </p>
           )}
           {isFormFilterActive && filingCount > 0 && (
             <p className="mt-6 text-base text-blue-600 dark:text-blue-400">
-              Showing {filingCount} filing(s) matching "{formTypeFilter}".
+              Showing {filingCount} filing(s) matching &quot;{formTypeFilter}&quot;.
             </p>
           )}
           {filingCount > itemsPerPage && (
