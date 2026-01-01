@@ -4,12 +4,15 @@ import Link from 'next/link';
 
 interface SubmissionsPageProps {
   params: Promise<{ cik: string }>;
+  searchParams: Promise<{ date?: string }>;
 }
 
 export default async function SubmissionsPage({
   params,
+  searchParams,
 }: SubmissionsPageProps) {
   const { cik } = await params;
+  const { date } = await searchParams;
   const cikNumber = parseInt(cik, 10);
 
   if (isNaN(cikNumber)) {
@@ -65,7 +68,7 @@ export default async function SubmissionsPage({
             </div>
           }
         >
-          <SubmissionsDisplay cik={cikNumber} />
+          <SubmissionsDisplay cik={cikNumber} initialDate={date} />
         </Suspense>
       </main>
     </div>

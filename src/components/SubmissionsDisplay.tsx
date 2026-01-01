@@ -6,14 +6,15 @@ import { SECSubmissions, RecentFiling } from '@/types/company';
 
 interface SubmissionsDisplayProps {
   cik: number;
+  initialDate?: string;
 }
 
-export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
+export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisplayProps) {
   const [submissions, setSubmissions] = useState<SECSubmissions | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dateFieldType, setDateFieldType] = useState<'filingDate' | 'reportDate'>('filingDate');
-  const [selectedDate, setSelectedDate] = useState<string>('');
+  const [selectedDate, setSelectedDate] = useState<string>(initialDate || '');
   const [formTypeFilter, setFormTypeFilter] = useState<string>('');
 
   // Helper function to normalize dates for comparison
@@ -67,9 +68,9 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
 
   // Reset filters when CIK changes
   useEffect(() => {
-    setSelectedDate('');
+    setSelectedDate(initialDate || '');
     setFormTypeFilter('');
-  }, [cik]);
+  }, [cik, initialDate]);
 
   if (loading) {
     return (
@@ -200,12 +201,32 @@ export default function SubmissionsDisplay({ cik }: SubmissionsDisplayProps) {
     }
 
     // If no exact matches, find the closest date and show context around it
-    const selectedDateObj = new Date(selectedDate);
+    if (!normalizedSelectedDate) {
+      return {
+        indices: formFilteredIndices,
+        exactMatchIndices: new Set<number>()
+      };
+    }
+    
+    const selectedDateObj = new Date(normalizedSelectedDate);
+    // Validate the date is valid
+    if (isNaN(selectedDateObj.getTime())) {
+      return {
+        indices: formFilteredIndices,
+        exactMatchIndices: new Set<number>()
+      };
+    }
+    
     let closestIndex = -1;
     let minDiff = Infinity;
 
     for (let i = 0; i < dateIndices.length; i++) {
-      const dateObj = new Date(dateIndices[i].date);
+      const normalizedDateValue = normalizeDate(dateIndices[i].date);
+      if (!normalizedDateValue) continue;
+      
+      const dateObj = new Date(normalizedDateValue);
+      if (isNaN(dateObj.getTime())) continue;
+      
       const diff = Math.abs(selectedDateObj.getTime() - dateObj.getTime());
       if (diff < minDiff) {
         minDiff = diff;

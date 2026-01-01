@@ -306,9 +306,13 @@ export default function CompanyFactsDisplay({
                   {paginatedFacts.map((fact, idx) => {
                     // Show first value for each fact (can be expanded later)
                     const firstValue = fact.values[0];
+                    if (!firstValue) return null;
+                    
+                    // Create a unique key using taxonomy, concept, unit, and first value's accession number
+                    const uniqueKey = `${fact.taxonomy}-${fact.concept}-${fact.unit}-${firstValue.accn || idx}`;
                     return (
                       <tr
-                        key={`${fact.taxonomy}-${fact.concept}-${fact.unit}-${idx}`}
+                        key={uniqueKey}
                         className="hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         <td className="px-6 py-4 whitespace-nowrap text-base text-gray-900 dark:text-white">
