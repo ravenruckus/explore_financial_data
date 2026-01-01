@@ -2,12 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { SECSubmissions, RecentFiling } from '@/types/company';
+import { SECSubmissions } from '@/types/company';
 
 interface SubmissionsDisplayProps {
   cik: number;
   initialDate?: string;
 }
+
+const itemsPerPage = 15;
 
 export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisplayProps) {
   const [submissions, setSubmissions] = useState<SECSubmissions | null>(null);
@@ -18,7 +20,7 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
   const [formTypeFilter, setFormTypeFilter] = useState<string>('');
   const [contextSize, setContextSize] = useState<number>(5);
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 15;
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
   // Helper function to normalize dates for comparison
   const normalizeDate = (dateStr: string | null | undefined): string | null => {
@@ -81,6 +83,48 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
   useEffect(() => {
     setCurrentPage(1);
   }, [selectedDate, formTypeFilter, contextSize, dateFieldType]);
+
+  // Detect dark mode
+  useEffect(() => {
+    const checkDarkMode = () => {
+      // Check if dark class is present on html element (class-based dark mode)
+      if (document.documentElement.classList.contains('dark')) {
+        setIsDarkMode(true);
+        return;
+      }
+      // Otherwise check media query (system preference)
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      setIsDarkMode(mediaQuery.matches);
+    };
+
+    checkDarkMode();
+
+    // Listen for media query changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleMediaChange = (e: MediaQueryListEvent) => {
+      // Only update if dark class is not present (media query takes precedence when no class)
+      if (!document.documentElement.classList.contains('dark')) {
+        setIsDarkMode(e.matches);
+      }
+    };
+
+    // Listen for class changes on html element
+    const observer = new MutationObserver(() => {
+      checkDarkMode();
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['class']
+    });
+
+    mediaQuery.addEventListener('change', handleMediaChange);
+    
+    return () => {
+      mediaQuery.removeEventListener('change', handleMediaChange);
+      observer.disconnect();
+    };
+  }, []);
 
   if (loading) {
     return (
@@ -454,8 +498,8 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
             {/* Context Size Slider - only show when date is selected */}
             {isDateFilterActive && (
               <div>
-                <label className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
-                  Filings on each side: {contextSize}
+                <label id="context-size-label" className="block text-base font-medium text-gray-700 dark:text-gray-300 mb-3">
+                Number of filings before and after selected date: {contextSize}
                 </label>
                 <div className="flex items-center gap-4">
                   <input
@@ -465,9 +509,13 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
                     step="1"
                     value={contextSize}
                     onChange={(e) => setContextSize(Number(e.target.value))}
-                    className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-600"
+                    aria-labelledby="context-size-label"
+                    aria-valuemin={0}
+                    aria-valuemax={50}
+                    aria-valuenow={contextSize}
+                    className="flex-1 h-2 rounded-lg appearance-none cursor-pointer dark:bg-gray-600"
                     style={{
-                      background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(contextSize / 50) * 100}%, #e5e7eb ${(contextSize / 50) * 100}%, #e5e7eb 100%)`
+                      background: `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${(contextSize / 50) * 100}%, ${isDarkMode ? '#4b5563' : '#e5e7eb'} ${(contextSize / 50) * 100}%, ${isDarkMode ? '#4b5563' : '#e5e7eb'} 100%)`
                     }}
                   />
                   <span className="text-sm text-gray-600 dark:text-gray-400 min-w-[60px] text-right">
@@ -581,6 +629,7 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
                 <button
                   onClick={() => setCurrentPage(currentPage - 1)}
                   disabled={currentPage === 1}
+                  aria-label="Go to previous page"
                   className="px-6 py-3 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-600"
                 >
                   Previous
@@ -588,6 +637,7 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
                 <button
                   onClick={() => setCurrentPage(currentPage + 1)}
                   disabled={currentPage === totalPages}
+                  aria-label="Go to next page"
                   className="px-6 py-3 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors dark:bg-blue-500 dark:hover:bg-blue-600 dark:disabled:bg-gray-600"
                 >
                   Next
