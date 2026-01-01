@@ -72,13 +72,6 @@ export default function SubmissionsDisplay({ cik, initialDate }: SubmissionsDisp
     setFormTypeFilter('');
   }, [cik, initialDate]);
 
-  // Set initial date when component mounts or initialDate changes
-  useEffect(() => {
-    if (initialDate) {
-      setSelectedDate(initialDate);
-    }
-  }, [initialDate]);
-
   if (loading) {
     return (
       <div className="w-full mt-8 p-8 bg-white rounded-lg shadow-md dark:bg-gray-800">
